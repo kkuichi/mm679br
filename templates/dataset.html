@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ dataset_name }} Dataset{% endblock %}
+
+{% block content %}
+<div class="container mb-5">
+    <h2 class="dataset-title text-center">{{ dataset_name }} Dataset</h2>
+
+    <h3 class="mt-4">Columns</h3>
+    <div class="row columns-container">
+        {% for column in columns %}
+            <div class="col-md-2 column-box text-center">{{ column }}</div>
+        {% endfor %}
+    </div>
+
+    <h3 class="mt-4">Preview</h3>
+    <div class="table-responsive">
+        {{ preview | safe }}
+    </div>
+
+    <div class="row mt-4 align-items-stretch">
+        <div class="col-md-6 mb-3">
+            <div class="p-3 border rounded shadow-sm h-100">
+                <h4>Analyze Dataset</h4>
+                <form action="/graph" method="post">
+                    <input type="hidden" name="dataset" value="{{ dataset_name }}">
+                    <label for="column" class="form-label">Choose a Column:</label>
+                    <select name="column" class="form-select mb-3">
+                        {% for column in columns %}
+                            <option value="{{ column }}">{{ column }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary w-100">Generate Graph</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="p-3 border rounded shadow-sm h-100 d-flex flex-column justify-content-center">
+                <form action="/statistics" method="post" class="mb-3">
+                    <input type="hidden" name="dataset" value="{{ dataset_name }}">
+                    <button type="submit" class="btn btn-secondary w-100">View Statistics</button>
+                </form>
+
+                <form action="/explain" method="post" class="mb-3">
+                    <input type="hidden" name="dataset" value="{{ dataset_name }}">
+                    <button type="submit" class="btn btn-warning w-100">Explain Model (XAI)</button>
+                </form>
+
+                <form action="/try_model" method="get">
+                    <input type="hidden" name="dataset" value="{{ dataset_name }}">
+                    <button type="submit" class="btn btn-success w-100">Try Model (Test Sample)</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

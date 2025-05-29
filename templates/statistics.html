@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Statistics for {{ dataset_name }}{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h2>{{ dataset_name }} Statistics</h2>
+    <div class="table-responsive mt-4">
+        {{ stats | safe }}
+    </div>
+
+    <form action="/dataset" method="post" class="mt-3">
+        <input type="hidden" name="dataset" value="{{ dataset_name }}">
+        <button type="submit" class="btn btn-dark">Back</button>
+    </form>
+</div>
+{% endblock %}

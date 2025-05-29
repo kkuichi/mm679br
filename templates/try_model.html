@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Try Model{% endblock %}
+
+{% block content %}
+    <h2 class="text-center">Try {{ dataset_name }} Neural Network</h2>
+
+    <form method="post" class="mb-4">
+        <input type="hidden" name="dataset" value="{{ dataset_name }}">
+
+        <div class="row">
+            {% if dataset_name == 'Diabetes' %}
+                <div class="col-md-4 mb-3">
+                    <label>Gender</label>
+                    <select class="form-control" name="gender">
+                        <option value="Female">Female</option>
+                        <option value="Male">Male</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label>Smoking History</label>
+                    <select class="form-control" name="smoking_history">
+                        <option value="never">never</option>
+                        <option value="current">current</option>
+                        <option value="ever">ever</option>
+                        <option value="former">former</option>
+                        <option value="not current">not current</option>
+                        <option value="No Info">No Info</option>
+                    </select>
+                </div>
+            {% elif dataset_name == 'Insurance' %}
+                <div class="col-md-4 mb-3">
+                    <label>Sex</label>
+                    <select class="form-control" name="sex">
+                        <option value="female">female</option>
+                        <option value="male">male</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label>Smoker</label>
+                    <select class="form-control" name="smoker">
+                        <option value="yes">yes</option>
+                        <option value="no">no</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label>Region</label>
+                    <select class="form-control" name="region">
+                        <option value="southeast">southeast</option>
+                        <option value="southwest">southwest</option>
+                        <option value="northeast">northeast</option>
+                        <option value="northwest">northwest</option>
+                    </select>
+                </div>
+            {% endif %}
+
+            {% for feature in features if feature not in ['gender', 'smoking_history', 'sex', 'smoker', 'region'] %}
+                <div class="col-md-4 mb-3">
+                    <label>{{ feature }}</label>
+                    <input class="form-control" type="number" step="any" name="{{ feature }}" required
+    placeholder="{% if dataset_name == 'Diabetes' %}
+                    {% if feature == 'age' %}e.g. 50 (20–90){% elif feature == 'bmi' %}e.g. 25.3 (15–40)
+                    {% elif 'hba1c' in feature|lower %}e.g. 6.2 (4–15)
+                    {% elif 'blood_glucose' in feature %}e.g. 130 (70–200)
+                    {% elif feature == 'hypertension' or feature == 'heart_disease' %}0 or 1
+                    {% else %}Enter value{% endif %}
+                 {% elif dataset_name == 'Insurance' %}
+                    {% if feature == 'age' %}e.g. 35 (18–65)
+                    {% elif feature == 'bmi' %}e.g. 28.1 (15–50)
+                    {% elif feature == 'children' %}e.g. 2 (0–5)
+                    {% else %}Enter value{% endif %}
+                 {% elif dataset_name == 'Cancer' %}
+                    {% if feature == 'Age' %}e.g. 55 (20–85)
+                    {% elif 'Smoking' in feature %}e.g. 1 (smokes), 0 (does not)
+                    {% elif feature == 'BMI' %}e.g. 22.5 (15–40)
+                    {% elif feature == 'Gender' %}e.g. 1 (male), 0 (female)
+                    {% elif feature == 'PhysicalActivity' %}e.g. 3.2 (0–10)
+                    {% elif feature == 'AlcoholIntake' %}e.g. 1.5 (0–10)
+                    {% elif 'Risk' in feature or 'History' in feature %}0 or 1
+                    {% else %}Enter value{% endif %}
+                 {% else %}Enter value{% endif %}">
+
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Predict</button>
+    </form>
+
+    {% if accuracy is defined %}
+        <div class="alert alert-secondary">
+            <strong>Model Accuracy:</strong>
+            {{ accuracy }}{% if dataset_name == 'Insurance' %} (MAE){% else %} (Test set){% endif %}
+        </div>
+    {% endif %}
+
+    {% if prediction_output is defined %}
+        <div class="alert alert-info">
+            {% if classification %}
+                <strong>Diagnosis:</strong> {{ prediction_output }} {{ classification }}<br>
+                <strong>Model thinking:</strong> {{ explanation_text }}<br>
+                <strong>Model confidence:</strong> {{ confidence }}%
+            {% else %}
+                <strong>Predicted Insurance Cost:</strong> {{ prediction_output }}<br>
+                <strong>Model thinking:</strong> {{ explanation_text }}
+            {% endif %}
+        </div>
+        <div class="card p-3">
+            {{ lime_html | safe }}
+        </div>
+    {% endif %}
+
+    <form action="/dataset" method="post" class="mt-3">
+        <input type="hidden" name="dataset" value="{{ dataset_name }}">
+        <button type="submit" class="btn btn-dark">Back</button>
+    </form>
+{% endblock %}

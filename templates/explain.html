@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Explain Model{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 class="text-center">{{ dataset_name }} Model Explanation</h2>
+
+    <table class="table table-striped">
+        <thead><tr><th>Feature</th><th>Description</th></tr></thead>
+        <tbody>
+        {% for key, desc in column_info.items() %}
+            <tr><td>{{ key }}</td><td>{{ desc }}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h4 class="mt-4">LIME Explanation</h4>
+    <div class="card p-3">
+        {{ lime_html | safe }}
+    </div>
+
+    <form action="/dataset" method="post" class="mt-4">
+        <input type="hidden" name="dataset" value="{{ dataset_name }}">
+        <button type="submit" class="btn btn-dark">Back</button>
+    </form>
+</div>
+{% endblock %}
